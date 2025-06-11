@@ -60,8 +60,19 @@ public abstract class GenericMapDAO<T extends Persistable> implements IGenericDA
 		storage.computeIfAbsent(getClassType(), entityClass -> new HashMap<>());
 	}
 
+	/**
+	 * Retrieves the unique key of the given entity by invoking the method specified
+	 * in the {@link KeyType} annotation.
+	 * 
+	 * @param entity The entity from which to extract the key.
+	 * @return The key as a String, or {@code null} if no valid key is found.
+	 * @throws IllegalStateException if the method specified in {@link KeyType} does
+	 *                               not exist, is inaccessible, or returns a
+	 *                               non-String value.
+	 */
 	public String getKey(T entity) {
 		Field[] fields = entity.getClass().getDeclaredFields();
+
 		for (Field eachField : fields) {
 			if (eachField.isAnnotationPresent(KeyType.class)) {
 				KeyType keyType = eachField.getAnnotation(KeyType.class);
@@ -69,13 +80,29 @@ public abstract class GenericMapDAO<T extends Persistable> implements IGenericDA
 
 				try {
 					Method method = entity.getClass().getMethod(methodName);
-					return (String) method.invoke(entity);
-				} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-					e.printStackTrace();
+					Object result = method.invoke(entity);
+
+					if (!(result instanceof String)) {
+						throw new IllegalStateException("Método '" + methodName + "' deve retornar uma String.");
+					}
+
+					return (String) result;
+				} catch (NoSuchMethodException e) {
+					throw new IllegalStateException(
+							"Método '" + methodName + "' não encontrado na classe " + entity.getClass().getSimpleName(),
+							e);
+				} catch (IllegalAccessException e) {
+					throw new IllegalStateException("Não foi possível acessar o método '" + methodName + "' na classe "
+							+ entity.getClass().getSimpleName(), e);
+				} catch (InvocationTargetException e) {
+					throw new IllegalStateException("Não foi possível invocar o método '" + methodName + "' na classe "
+							+ entity.getClass().getSimpleName(), e);
 				}
 			}
 		}
-		return null;
+
+		throw new IllegalStateException(
+				"No field annotated with @KeyType found in class " + entity.getClass().getSimpleName());
 	}
 
 	@Override
