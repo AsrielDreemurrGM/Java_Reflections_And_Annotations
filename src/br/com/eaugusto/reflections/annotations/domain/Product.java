@@ -1,5 +1,7 @@
 package br.com.eaugusto.reflections.annotations.domain;
 
+import br.com.eaugusto.reflections.annotations.annotation.KeyType;
+
 /**
  * Represents a product with identifying code, description, and pricing details.
  * Implements Persistable to provide a unique identifier (code).
@@ -9,20 +11,21 @@ package br.com.eaugusto.reflections.annotations.domain;
  */
 public class Product implements Persistable {
 
+	@KeyType("getCode")
 	private String code;
 	private String name;
 	private String description;
 	private double value;
 	private String brand;
-	
+
 	/**
 	 * Constructs a Product instance with all attributes.
 	 * 
-	 * @param name product name
-	 * @param code unique product code
+	 * @param name        product name
+	 * @param code        unique product code
 	 * @param description product description
-	 * @param value product price/value
-	 * @param brand product brand
+	 * @param value       product price/value
+	 * @param brand       product brand
 	 */
 	public Product(String name, String code, String description, double value, String brand) {
 		this.name = name;
@@ -31,7 +34,7 @@ public class Product implements Persistable {
 		this.value = value;
 		this.brand = brand;
 	}
-	
+
 	// --- Getters ---
 	public String getDescription() {
 		return description;
@@ -43,6 +46,10 @@ public class Product implements Persistable {
 
 	public String getBrand() {
 		return brand;
+	}
+
+	public String getCode() {
+		return code;
 	}
 
 	// --- Setters ---
@@ -61,33 +68,21 @@ public class Product implements Persistable {
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setCode(String code) {
 		this.code = code;
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	/**
 	 * Returns a formatted string representing product details.
 	 */
 	@Override
 	public String toString() {
-	    return "Informações do Produto:\n"
-	        + "Nome: " + name + "\n"
-	        + "Código: " + code + "\n"
-	        + "Descrição: " + description + "\n"
-	        + "Valor: R$ " + String.format("%.2f", value) + "\n"
-	        + "Marca: " + brand;
-	}
-
-	/**
-	 * Returns the unique product code as the persistence identifier.
-	 */
-	@Override
-	public String getCodeOrCPF() {
-		return this.code;
+		return "Informações do Produto:\n" + "Nome: " + name + "\n" + "Código: " + code + "\n" + "Descrição: "
+				+ description + "\n" + "Valor: R$ " + String.format("%.2f", value) + "\n" + "Marca: " + brand;
 	}
 }

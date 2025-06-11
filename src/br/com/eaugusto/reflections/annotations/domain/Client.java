@@ -2,6 +2,8 @@ package br.com.eaugusto.reflections.annotations.domain;
 
 import java.util.Objects;
 
+import br.com.eaugusto.reflections.annotations.annotation.KeyType;
+
 /**
  * Represents a client (customer) with personal and contact information.
  * Implements Persistable to provide a unique identifier (CPF).
@@ -12,6 +14,7 @@ import java.util.Objects;
 public class Client implements Persistable {
 
 	private String name;
+	@KeyType("getCpf")
 	private String cpf;
 	private String phoneNumber;
 	private String address;
@@ -145,13 +148,5 @@ public class Client implements Persistable {
 		return "Informações do Cliente: \n" + "Nome: " + name + "\nCPF: " + cpf + "\nNúmero de Telefone: " + phoneNumber
 				+ "\nEndereço: " + address + "\nNúmero do Endereço: " + addressNumber + "\nCidade: " + city
 				+ "\nEstado: " + state;
-	}
-
-	/**
-	 * Returns the unique identifier (CPF) as the code for persistence.
-	 */
-	@Override
-	public String getCodeOrCPF() {
-		return this.cpf;
 	}
 }

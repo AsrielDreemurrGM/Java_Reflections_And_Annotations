@@ -14,10 +14,4 @@ package br.com.eaugusto.reflections.annotations.domain;
  */
 public interface Persistable {
 
-	/**
-	 * Returns a unique identifier for the persistable object.
-	 * 
-	 * @return a string representing the unique ID (e.g., CPF or product code)
-	 */
-	public String getCodeOrCPF();
 }

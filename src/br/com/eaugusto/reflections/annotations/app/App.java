@@ -3,7 +3,6 @@ package br.com.eaugusto.reflections.annotations.app;
 import javax.swing.JOptionPane;
 
 import br.com.eaugusto.reflections.annotations.dao.ClientMapDAO;
-import br.com.eaugusto.reflections.annotations.dao.ClientSetDAO;
 import br.com.eaugusto.reflections.annotations.dao.IClientDAO;
 import br.com.eaugusto.reflections.annotations.dao.IProductDAO;
 import br.com.eaugusto.reflections.annotations.dao.ProductMapDAO;
@@ -51,10 +50,6 @@ public class App {
 	private static final String NOTINFORMEDERROR = "Não informado";
 	private static final String ENTRYERROR = "Erro de Entrada";
 
-	// Toggle this flag for quick switching between using Set or Map for storage
-	private static final boolean USEMAP = true;
-	private static final IClientDAO clientDAO = USEMAP ? new ClientMapDAO() : new ClientSetDAO();
-
 	private static IClientDAO iClientDAO;
 	private static IProductDAO iProductDAO;
 
@@ -68,7 +63,7 @@ public class App {
 	 * @param args command-line arguments (not used)
 	 */
 	public static void main(String[] args) {
-		iClientDAO = clientDAO;
+		iClientDAO = new ClientMapDAO();
 		iProductDAO = new ProductMapDAO();
 
 		int entityChoice = MenuHelper.showEntitySelection();

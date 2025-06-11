@@ -1,9 +1,13 @@
 package br.com.eaugusto.reflections.annotations.dao.generic;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import br.com.eaugusto.reflections.annotations.annotation.KeyType;
 import br.com.eaugusto.reflections.annotations.domain.Persistable;
 
 /**
@@ -56,13 +60,32 @@ public abstract class GenericMapDAO<T extends Persistable> implements IGenericDA
 		storage.computeIfAbsent(getClassType(), entityClass -> new HashMap<>());
 	}
 
+	public String getKey(T entity) {
+		Field[] fields = entity.getClass().getDeclaredFields();
+		for (Field eachField : fields) {
+			if (eachField.isAnnotationPresent(KeyType.class)) {
+				KeyType keyType = eachField.getAnnotation(KeyType.class);
+				String methodName = keyType.value();
+
+				try {
+					Method method = entity.getClass().getMethod(methodName);
+					return (String) method.invoke(entity);
+				} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public Boolean register(T entity) {
 		Map<String, T> entityMap = storage.get(getClassType());
-		if (entityMap.containsKey(entity.getCodeOrCPF())) {
+		String entityKey = getKey(entity);
+		if (entityMap.containsKey(entityKey)) {
 			return false;
 		}
-		entityMap.put(entity.getCodeOrCPF(), entity);
+		entityMap.put(entityKey, entity);
 		return true;
 	}
 
@@ -79,7 +102,8 @@ public abstract class GenericMapDAO<T extends Persistable> implements IGenericDA
 	@Override
 	public void updateEntity(T entity) {
 		Map<String, T> entityMap = storage.get(getClassType());
-		T registeredEntity = entityMap.get(entity.getCodeOrCPF());
+		String entityKey = getKey(entity);
+		T registeredEntity = entityMap.get(entityKey);
 
 		if (registeredEntity != null) {
 			updateRegisteredEntityWithNewData(entity, registeredEntity);
